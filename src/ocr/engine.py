@@ -70,10 +70,16 @@ class OCREngine:
         lang_code = self.LANGUAGE_CODES[language]
         
         try:
+            # Use improved config for better document/invoice detection
+            # --oem 1: Use LSTM OCR engine only (best for modern documents)
+            # --psm 3: Fully automatic page segmentation (best for invoices/tables)
+            # This works better for complex layouts like invoices
+            config = '--oem 1 --psm 3'
+            
             text = pytesseract.image_to_string(
                 processed_image,
                 lang=lang_code,
-                config='--psm 3'  # Fully automatic page segmentation
+                config=config
             )
             return text.strip()
         except Exception as e:

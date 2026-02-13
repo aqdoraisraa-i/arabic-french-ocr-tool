@@ -12,9 +12,9 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal, QMimeData
 from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent, QFont
 from PIL import Image
 
-from ..ocr.engine import OCREngine
-from ..utils.file_handler import FileHandler
-from ..utils.export import ExportHandler
+from src.ocr.engine import OCREngine
+from src.utils.file_handler import FileHandler
+from src.utils.export import ExportHandler
 
 
 class OCRWorker(QThread):
@@ -25,16 +25,50 @@ class OCRWorker(QThread):
     error = pyqtSignal(str)
     finished = pyqtSignal()
     
-    def __init__(self, files: List[str], language: str, preprocess: bool):
+    def __init__(self, files: List[str], language: str, preprocess: bool, engine_type: str = 'tesseract'):
         super().__init__()
         self.files = files
         self.language = language
         self.preprocess = preprocess
-        self.ocr_engine = OCREngine()
+        self.engine_type = engine_type
+        self.ocr_engine = None
+    
+    def _init_engine(self):
+        """Lazy initialize the selected engine."""
+        if self.ocr_engine is not None:
+            return
+        
+        if self.engine_type == 'easyocr':
+            try:
+                import os
+                os.environ.setdefault('KMP_DUPLICATE_LIB_OK', 'TRUE')
+                from src.ocr.easyocr_engine import EasyOCREngine
+                self.ocr_engine = EasyOCREngine()
+            except Exception as e:
+                error_msg = str(e)
+                if 'DLL' in error_msg or 'WinError' in error_msg:
+                    raise RuntimeError(f"Failed to load EasyOCR engine due to Windows DLL issue. Please install Microsoft Visual C++ Redistributable: https://aka.ms/vs/17/release/vc_redist.x64.exe")
+                raise RuntimeError(f"Failed to load EasyOCR engine: {str(e)}")
+        elif self.engine_type == 'paddleocr':
+            try:
+                import os
+                os.environ.setdefault('KMP_DUPLICATE_LIB_OK', 'TRUE')
+                from src.ocr.paddleocr_engine import PaddleOCREngine
+                self.ocr_engine = PaddleOCREngine()
+            except Exception as e:
+                error_msg = str(e)
+                if 'DLL' in error_msg or 'WinError' in error_msg:
+                    raise RuntimeError(f"Failed to load PaddleOCR engine due to Windows DLL issue. Please install Microsoft Visual C++ Redistributable: https://aka.ms/vs/17/release/vc_redist.x64.exe")
+                raise RuntimeError(f"Failed to load PaddleOCR engine: {str(e)}")
+        else:
+            self.ocr_engine = OCREngine()
     
     def run(self):
         """Run OCR processing on files."""
         try:
+            # Initialize engine on first use (lazy loading)
+            self._init_engine()
+            
             for idx, file_path in enumerate(self.files):
                 try:
                     # Load images from file
@@ -101,6 +135,13 @@ class MainWindow(QMainWindow):
         
         # Controls section
         controls_layout = QHBoxLayout()
+        
+        # OCR Engine selection
+        engine_label = QLabel("OCR Engine:")
+        self.engine_combo = QComboBox()
+        self.engine_combo.addItems(['Tesseract (Fast)', 'EasyOCR (Invoices)', 'PaddleOCR (Advanced)'])
+        controls_layout.addWidget(engine_label)
+        controls_layout.addWidget(self.engine_combo)
         
         # Language selection
         lang_label = QLabel("Language:")
@@ -280,6 +321,13 @@ class MainWindow(QMainWindow):
         
         language = self.language_combo.currentText()
         preprocess = self.preprocess_checkbox.isChecked()
+        engine_text = self.engine_combo.currentText()
+        if 'EasyOCR' in engine_text:
+            engine_type = 'easyocr'
+        elif 'PaddleOCR' in engine_text:
+            engine_type = 'paddleocr'
+        else:
+            engine_type = 'tesseract'
         
         # Disable buttons during processing
         self.process_btn.setEnabled(False)
@@ -295,7 +343,7 @@ class MainWindow(QMainWindow):
         self.extracted_text = ""
         
         # Create and start worker thread
-        self.ocr_worker = OCRWorker(self.current_files, language, preprocess)
+        self.ocr_worker = OCRWorker(self.current_files, language, preprocess, engine_type)
         self.ocr_worker.progress.connect(self.update_progress)
         self.ocr_worker.result.connect(self.append_result)
         self.ocr_worker.error.connect(self.show_error)

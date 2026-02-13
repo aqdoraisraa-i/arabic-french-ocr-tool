@@ -48,6 +48,7 @@ class ImagePreprocessor:
     def enhance_contrast(image: np.ndarray) -> np.ndarray:
         """
         Enhance image contrast using CLAHE (Contrast Limited Adaptive Histogram Equalization).
+        More aggressive for special character detection.
         
         Args:
             image: Input image as numpy array
@@ -55,8 +56,15 @@ class ImagePreprocessor:
         Returns:
             Contrast-enhanced image
         """
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-        return clahe.apply(image)
+        clahe = cv2.createCLAHE(clipLimit=4.0, tileGridSize=(8, 8))  # Increased clipLimit from 2.0
+        result = clahe.apply(image)
+        
+        # Additional contrast boost for special characters
+        alpha = 1.3  # Contrast multiplier
+        beta = 10    # Brightness adjustment
+        result = cv2.convertScaleAbs(result, alpha=alpha, beta=beta)
+        
+        return result
     
     @staticmethod
     def binarize(image: np.ndarray) -> np.ndarray:

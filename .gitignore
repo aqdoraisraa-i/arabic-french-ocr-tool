@@ -39,6 +39,8 @@ env/
 
 # PyInstaller
 *.spec
+installer_package/
+ArabicFrenchOCR.spec
 
 # Testing
 .pytest_cache/
