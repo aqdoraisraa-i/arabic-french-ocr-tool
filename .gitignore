@@ -56,8 +56,12 @@ tmp/
 
 # Output files
 output/
-*.txt
-*.docx
+ocr_output.txt
+ocr_output.docx
+
+# Test scripts (keep test_imports.py)
+# test_*.py
 
 # OS
 Thumbs.db
+.DS_Store
