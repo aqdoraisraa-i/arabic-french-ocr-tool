@@ -21,9 +21,18 @@ This document provides a summary of security measures and vulnerability status f
    - **Affected Version**: < 10.3.0
    - **CVE**: Buffer overflow vulnerability in Pillow
    - **Status**: ✅ FIXED
-   - **Action Taken**: Updated Pillow from 10.2.0 to 10.3.0
+   - **Action Taken**: Updated Pillow from 10.2.0 to 10.3.0, then to 12.1.1
    - **Date Fixed**: 2024-02-13
-   - **Patched Version**: 10.3.0
+   - **Patched Version**: 10.3.0+
+
+2. **Pillow Out-of-Bounds Write (PSD Images)**
+   - **Severity**: CRITICAL
+   - **Affected Version**: >= 10.3.0, < 12.1.1
+   - **CVE**: Out-of-bounds write when loading PSD images
+   - **Status**: ✅ FIXED
+   - **Action Taken**: Updated Pillow from 10.3.0 to 12.1.1
+   - **Date Fixed**: 2024-02-13
+   - **Patched Version**: 12.1.1
 
 ## Current Dependency Versions
 
@@ -32,7 +41,7 @@ All dependencies are using secure, up-to-date versions:
 ```
 pytesseract==0.3.10    # Latest stable
 PyQt5==5.15.9          # Latest stable
-Pillow==10.3.0         # Security patched version
+Pillow==12.1.1         # Security patched version (multiple fixes)
 pdf2image==1.16.3      # Latest stable
 python-docx==1.1.0     # Latest stable
 opencv-python==4.9.0.80 # Latest stable
@@ -132,7 +141,7 @@ When vulnerabilities are discovered:
 | Date | Type | Result | Action Taken |
 |------|------|--------|--------------|
 | 2024-02-13 | CodeQL Scan | 0 alerts | None required |
-| 2024-02-13 | Dependency Check | 1 vulnerability | Updated Pillow to 10.3.0 |
+| 2024-02-13 | Dependency Check | 2 vulnerabilities | Updated Pillow 10.2.0 → 12.1.1 |
 | 2024-02-13 | Code Review | 3 minor issues | Fixed all issues |
 
 ## Ongoing Security Measures

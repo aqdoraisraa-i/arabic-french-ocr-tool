@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-02-13
 
 ### Security
-- **CRITICAL**: Updated Pillow from 10.2.0 to 10.3.0 to fix buffer overflow vulnerability (CVE)
+- **CRITICAL**: Updated Pillow from 10.2.0 to 12.1.1 to fix multiple vulnerabilities:
+  - Buffer overflow vulnerability (CVE) - fixed in 10.3.0
+  - Out-of-bounds write when loading PSD images (CVE) - fixed in 12.1.1
 
 ### Added
 - Initial release of Arabic-French OCR Tool
