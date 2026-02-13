@@ -1,0 +1,1 @@
+# arabic-french-ocr-tool
