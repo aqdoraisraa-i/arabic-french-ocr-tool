@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2024-02-13
 
+### Security
+- **CRITICAL**: Updated Pillow from 10.2.0 to 10.3.0 to fix buffer overflow vulnerability (CVE)
+
 ### Added
 - Initial release of Arabic-French OCR Tool
 - Support for Arabic and French text recognition
