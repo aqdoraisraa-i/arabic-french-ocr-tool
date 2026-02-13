@@ -1,7 +1,7 @@
 """File handling utilities for OCR application."""
 
 import os
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from PIL import Image
 from pdf2image import convert_from_path
 import tempfile
@@ -137,7 +137,7 @@ class FileHandler:
             raise ValueError(f"Unsupported file format: {file_path}")
     
     @staticmethod
-    def validate_files(file_paths: List[str]) -> tuple[List[str], List[str]]:
+    def validate_files(file_paths: List[str]) -> Tuple[List[str], List[str]]:
         """
         Validate list of file paths.
         

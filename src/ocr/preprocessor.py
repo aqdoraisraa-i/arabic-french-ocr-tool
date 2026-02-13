@@ -28,7 +28,7 @@ class ImagePreprocessor:
             image = np.array(image)
         
         if len(image.shape) == 3:
-            return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         return image
     
     @staticmethod
